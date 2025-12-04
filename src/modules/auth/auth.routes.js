@@ -1,34 +1,14 @@
-import { Router } from "express";
-import { verificarToken } from "../../core/middlewares/auth.middleware.js";
-import { requireRole } from "../../core/middlewares/roles.middleware.js";
-import { ROLES } from "../../core/roles/roles.js";
+import { Router } from 'express'
+import { AuthController } from './auth.controller.js'
 
-export const alojamientoRouter = () => {
-  const router = Router();
+export const authRouter = () => {
+  
+    const authRouter = Router()
+    const authController = new AuthController()
+ 
+    authRouter.post('/login', authController.login)
+    authRouter.post('/register', authController.register)
+    authRouter.post('/logout', authController.logout)
 
-  // Solo HOST puede crear alojamientos
-  router.post(
-    "/",
-    verificarToken,
-    requireRole([ROLES.HOST]),
-    crearAlojamiento
-  );
-
-  // Solo USER puede reservar
-  router.post(
-    "/:id/reservar",
-    verificarToken,
-    requireRole([ROLES.USER]),
-    crearReserva
-  );
-
-  // Solo ADMIN puede borrar lo que quiera
-  router.delete(
-    "/:id",
-    verificarToken,
-    requireRole([ROLES.ADMIN]),
-    eliminarAlojamiento
-  );
-
-  return router;
-};
+    return authRouter
+}

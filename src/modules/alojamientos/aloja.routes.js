@@ -1,16 +1,38 @@
-import { Router } from 'express'
-import { AlojaController } from './aloja.controller.js'
-import { authCookieMiddleware } from '../../core/middlewares/authCookie.js';
+import { Router } from "express";
+import { verificarToken } from "../../core/middlewares/auth.middleware.js";
+import { requireRole } from "../../core/middlewares/roles.middleware.js";
+import { ROLES } from "../../core/roles/roles.js";
 
-export const alojaRouter = () => {
-  
-    const alojaRouter = Router()
-    const alojaController = new AlojaController()
- 
-    alojaRouter.get('/consultar', authCookieMiddleware, alojaController.consultar)
-    alojaRouter.post('/crear', authCookieMiddleware, alojaController.crear)
-    alojaRouter.put('/editar', authCookieMiddleware, alojaController.editar)
-    alojaRouter.delete('/eliminar', authCookieMiddleware, alojaController.eliminar)
-   
-    return alojaRouter
-}
+// Controladores (asegúrate de importar los correctos)
+import { crearAlojamiento, eliminarAlojamiento } from "./alojamientos.controller.js";
+import { crearReserva } from "../reservas/reservas.controller.js";
+
+export const alojamientosRouter = () => {
+  const router = Router();
+
+  // HOST crea alojamientos
+  router.post(
+    "/",
+    verificarToken,
+    requireRole([ROLES.HOST]),
+    crearAlojamiento
+  );
+
+  // USER reserva un alojamiento
+  router.post(
+    "/:id/reservar",
+    verificarToken,
+    requireRole([ROLES.USER]),
+    crearReserva
+  );
+
+  // ADMIN elimina alojamientos
+  router.delete(
+    "/:id",
+    verificarToken,
+    requireRole([ROLES.ADMIN]),
+    eliminarAlojamiento
+  );
+
+  return router;
+};
