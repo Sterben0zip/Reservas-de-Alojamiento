@@ -1,44 +1,50 @@
-import { UsuariosModel } from './usuarios.model.js'
-import { UsuariosError } from './usuarios.error.js'
+import { usuariosModel } from "./usuarios.model.js"
+import { usuariosError } from "./usuarios.error.js"
 
-export class UsuariosService {
-    
-    static async consultar (){
-        const result = await UsuariosModel.buscarUsuariosPorNombre()    
-        return result
+export class usuariosService {
+
+  static async registrar({ nombre, correo, contrasena, rol }) {
+    const existe = await usuariosModel.buscarPorCorreo({ correo });
+
+    if (existe) {
+      throw new usuariosError("El correo ya está registrado", 400);
     }
 
-    static async consultarPorId ({id}){
-        const result = await UsuariosModel.buscarUsuariosPorId({id})    
-        return result
-    }
+    const nuevo = await usuariosModel.insertarUsuario({
+      nombre,
+      correo,
+      contrasena,
+      rol
+    });
 
-    static async actualizarNombrePorId ({nombre, id}){
+    return nuevo;
+  }
 
-        //Verificar si existe el usuario
-        const result = await UsuariosModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new UsuariosError("El usuario no existe", 401) }
-        
-        //Actualizar el nombre del usuario
-        const actualizacion = await UsuariosModel.actualizarNombrePorId({ nombre, id })
-        if(!actualizacion.status){ throw new UsuariosError(actualizacion.message, 401) }
-        
-        //Obtener la informacion del usuario
-        const info = await UsuariosModel.buscarUsuariosPorId({id})    
-        return info
-    }
+  static async consultar() {
+    return await usuariosModel.buscarTodos();
+  }
 
-    static async eliminarPorId ({id}){
+  static async consultarPorId({ id }) {
+    const user = await usuariosModel.buscarPorId({ id });
 
-        //Verificar si existe el usuario
-        const result = await UsuariosModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new UsuariosError("El usuario no existe", 401) }
-        
-        // Eliminar el usuario por id
-        const eliminar = await UsuariosModel.eliminarPorId({ id })
-        if(!eliminar.status){ throw new UsuariosError(eliminar.message, 401) }
-          
-        return {id: id, message: eliminar.message}
-    }
+    if (!user) throw new usuariosError("Usuario no encontrado", 404);
+
+    return user;
+  }
+
+  static async editar({ id, nombre }) {
+    const ok = await usuariosModel.actualizar({ id, nombre });
+
+    if (!ok) throw new usuariosError("No se pudo actualizar el usuario", 400);
+
+    return this.consultarPorId({ id });
+  }
+
+  static async eliminar({ id }) {
+    const ok = await usuariosModel.eliminar({ id });
+
+    if (!ok) throw new usuariosError("No existe el usuario", 404);
+
+    return { id, message: "Usuario eliminado correctamente" };
+  }
 }
-

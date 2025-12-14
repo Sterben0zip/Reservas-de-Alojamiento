@@ -1,101 +1,68 @@
-import { validatealojaId, validatealojaNombreId, errorFlattenError} from './aloja.schema.js'
-import { alojaService } from './aloja.service.js'
+import {
+  validarCrearAloja,
+  validarEditarAloja,
+  validarIdAloja,
+  errorFlattenError
+} from "./aloja.schema.js";
 
-export class AlojaController {
+import { alojaService } from "./aloja.service.js";
+import { ROLES } from "../../core/roles/roles.js";
+
+export class alojaController {
+
+  crear = async (req, res, next) => {
+    try {
+      const result = validarCrearAloja(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
+
+      const nuevo = await alojaService.crear(result.data);
+      res.status(201).json({ status: "success", alojamiento: nuevo });
+  
+    } catch (error) { next(error); }
+  };
 
   consultar = async (req, res, next) => {
-
     try {
+      const lista = await alojaService.consultar();
+      res.status(200).json({ status: "success", alojamientos: lista });
 
-      const { id } = req.body;
+    } catch (error) { next(error); }
+  };
 
-      let resultado;
+  consultarPorId = async (req, res, next) => {
+    try {
+      const result = validarIdAloja(req.params);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      if (id) {
-        
-        const result = validatealojaId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await alojaService.consultarPorId({id})
+      const aloja = await alojaService.consultarPorId(result.data);
+      res.status(200).json({ status: "success", alojamiento: aloja });
 
-      } else {
-        resultado = await alojaService.consultar()
-      }
-
-      res.status(201).json({
-        status: "success", 
-        aloja: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
-
-crear = async (req, res, next) => {
-  try {
-    const result = validatealojaNombreId(req.body)
-    if (!result.success) {
-      return res.status(400).json({
-        status: "error_bad_request",
-        error: errorFlattenError(result.error)
-      })
-    }
-
-    const { nombre } = req.body;
-    const resultado = await alojaService.crearAloja({ nombre })
-
-    res.status(201).json({
-      status: "success",
-      aloja: resultado
-    })
-
-  } catch (error) {
-    next(error)
-  }
-}
+    } catch (error) { next(error); }
+  };
 
   editar = async (req, res, next) => {
-
     try {
+      const result = validarEditarAloja(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatealojaNombreId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const { nombre, id} = req.body
-      const resultado = await alojaService.actualizarNombrePorId({nombre, id})
+      const aloja = await alojaService.editar(result.data);
+      res.status(200).json({ status: "success", alojamiento: aloja });
 
-      res.status(201).json({
-        status: "success", 
-        aloja: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
+    } catch (error) { next(error); }
+  };
 
   eliminar = async (req, res, next) => {
-
     try {
+      const result = validarIdAloja(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatealojaId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const {id} = req.body
-      const resultado = await alojaService.eliminarPorId({id})
+      const aloja = await alojaService.eliminar(result.data);
+      res.status(200).json({ status: "success", alojamiento: aloja });
 
-      res.status(201).json({
-        status: "success", 
-        aloja: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
-
+    } catch (error) { next(error); }
+  };
 }
-

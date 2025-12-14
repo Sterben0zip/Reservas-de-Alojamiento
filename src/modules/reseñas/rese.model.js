@@ -1,124 +1,107 @@
-import { getConnection  } from '../../config/database.js'
-import { QueryError } from '../../core/errors/connection.error.js'
-import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js";
+import { getConnection } from "../../config/database.js"
+import { QueryError } from "../../core/errors/connection.error.js"
+import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js"
+import crypto from "crypto"
 
 export class reseModel {
 
-  static async buscarresePorNombre () {
-
+  static async insertar({ id_usuario, id_aloja, rating, comentario }) {
     const conn = await getConnection();
+    try {
+      const id = crypto.randomUUID();
 
-    try { 
-      
-      const [rows] = await conn.query('SELECT id, nombre FROM rese ORDER BY nombre')
-     
-      const rese = rows.map(usuario => ({
-          ...usuario,
-          id: bufferToUuid(usuario.id)  // convertir binary → uuid string
+      await conn.query(
+        `INSERT INTO rese (id, id_usuario, id_aloja, rating, comentario)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+          uuidToBuffer(id),
+          uuidToBuffer(id_usuario),
+          uuidToBuffer(id_aloja),
+          rating,
+          comentario
+        ]
+      );
+
+      return { id, id_usuario, id_aloja, rating, comentario };
+
+    } catch (error) {
+      throw new QueryError("Error al insertar reseña", 502, error);
+    }
+  }
+
+  static async obtenerTodas() {
+    const conn = await getConnection();
+    try {
+      const [rows] = await conn.query(`
+        SELECT id, id_usuario, id_aloja, rating, comentario, creado_en
+        FROM rese ORDER BY creado_en DESC
+      `);
+
+      return rows.map(r => ({
+        ...r,
+        id: bufferToUuid(r.id),
+        id_usuario: bufferToUuid(r.id_usuario),
+        id_aloja: bufferToUuid(r.id_aloja)
       }));
 
-      return rese
-
     } catch (error) {
-      throw new QueryError('Error al consulta la existencia de los rese', 502, error)
+      throw new QueryError("Error al obtener reseñas", 502, error);
     }
   }
 
-  static async buscarresePorId ({id}) {
-
+  static async obtenerPorId({ id }) {
     const conn = await getConnection();
-
-    try { 
-
+    try {
       const [rows] = await conn.query(
-        'SELECT id, nombre FROM rese WHERE id = ?',
+        `SELECT id, id_usuario, id_aloja, rating, comentario, creado_en
+         FROM rese WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      if(rows.length === 0) return []
+      if (rows.length === 0) return null;
 
-      const usuario = rows[0];
+      const r = rows[0];
 
-      // Convertir BINARY → UUID string
-      usuario.id = bufferToUuid(usuario.id);
+      return {
+        ...r,
+        id: bufferToUuid(r.id),
+        id_usuario: bufferToUuid(r.id_usuario),
+        id_aloja: bufferToUuid(r.id_aloja)
+      };
 
-      return usuario
-  
     } catch (error) {
-      throw new QueryError('Error al buscar un usuario por id', 502, error)
+      throw new QueryError("Error al obtener reseña por id", 502, error);
     }
-
   }
 
-  static async existeUsuarioPorId ({ id }) {
-
+  static async actualizar({ id, rating, comentario }) {
     const conn = await getConnection();
+    try {
+      const [res] = await conn.query(
+        `UPDATE rese SET rating = ?, comentario = ?
+         WHERE id = ?`,
+        [rating, comentario, uuidToBuffer(id)]
+      );
 
-    try { 
-      const [user] = await conn.query(
-        'SELECT EXISTS(SELECT 1 FROM rese WHERE id = ?) AS user_exists;',
+      return res.affectedRows > 0;
+
+    } catch (error) {
+      throw new QueryError("Error al actualizar reseña", 502, error);
+    }
+  }
+
+  static async eliminar({ id }) {
+    const conn = await getConnection();
+    try {
+      const [res] = await conn.query(
+        `DELETE FROM rese WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      const [{ user_exists }] = user
-      return user_exists === 1 ? true : false
-    
-    } catch (error) {
-      throw new QueryError('Error al consulta la existencia de un usuario', 502, error)
-    }
-  }
-
-  static async actualizarNombrePorId ({nombre, id}) {
-
-    const conn = await getConnection();
-
-    try { 
-
-      const [result] = await conn.query(
-        `UPDATE rese 
-        SET nombre = ?
-        WHERE id = ? `,
-        [nombre, uuidToBuffer(id)]
-      )
-
-      if (result.affectedRows === 0) {
-        return { status: false, message: "No se encontró el usuario" };
-      }else if(result.affectedRows === 1 && result.changedRows === 0){
-        return { status: false, message: "Datos iguales, no hubo cambios" };
-      }
-
-      return { status: true, message: "Usuario actualizado" };
+      return res.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al actualizar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al eliminar reseña", 502, error);
     }
-
   }
-
-  static async eliminarPorId ({id}) {
-
-    const conn = await getConnection();
-
-    try { 
-
-      const [result] = await conn.query(
-       `DELETE FROM rese WHERE id = ?`,
-        [uuidToBuffer(id)]
-      )
-
-      // Validaciones de resultado
-      if (result.affectedRows === 0) {
-        return { status: false, message: "Usuario no encontrado" };
-      }
-
-      return { status: true, message: "Usuario eliminado correctamente" };
-      
-
-    } catch (error) {
-      throw new QueryError('Error al eliminar el nombre del usuario por id', 502, error)
-    }
-
-  }
-
-
 }

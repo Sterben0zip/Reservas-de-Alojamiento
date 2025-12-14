@@ -1,28 +1,27 @@
-import z from 'zod'
+import { z } from "zod";
 
-const alojaIdSchema = z.object({
-  id: z.string().min(1)
-})
+export const validarCrearAloja = (data) => z.object({
+  id_host: z.string().uuid(),
+  titulo: z.string().min(3),
+  descripcion: z.string().optional(),
+  precio: z.number().positive(),
+  capacidad: z.number().int().min(1),
+  ubicacion: z.string().min(2),
+  servicios: z.array(z.string()).default([])
+}).safeParse(data);
 
-const alojaNombreIdSchema = z.object({
-  id: z.string().min(1), 
-  nombre: z.string().min(1)
-})
+export const validarEditarAloja = (data) => z.object({
+  id: z.string().uuid(),
+  titulo: z.string().min(3),
+  descripcion: z.string().optional(),
+  precio: z.number().positive(),
+  capacidad: z.number().int().min(1),
+  ubicacion: z.string().min(2),
+  servicios: z.array(z.string()).default([])
+}).safeParse(data);
 
-export function validatealojaId (input) {
-  return alojaIdSchema.safeParse(input)
-}
-export function validatealojaNombreId (input) {
-  return alojaNombreIdSchema.safeParse(input)
-}
+export const validarIdAloja = (data) => z.object({
+  id: z.string().uuid()
+}).safeParse(data);
 
-export function errorFlattenError (result){
-  return z.flattenError(result)
-}
-const alojaCrearSchema = z.object({
-  nombre: z.string().min(1)
-})
-
-export function validatealojaCrear(input) {
-  return alojaCrearSchema.safeParse(input)
-}
+export const errorFlattenError = (err) => err.flatten().fieldErrors;

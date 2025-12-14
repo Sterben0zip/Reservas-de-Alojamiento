@@ -1,44 +1,50 @@
-import { reservaModel } from './reserva.model.js'
-import { reservaError } from './reserva.error.js'
+import { reservaModel } from "./reserva.model.js";
+import { reservaError } from "./reserva.error.js";
 
 export class reservaService {
-    
-    static async consultar (){
-        const result = await reservaModel.buscarreservaPorNombre()    
-        return result
+
+  static async crear({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
+
+    const choque = await reservaModel.existeChoqueFechas({
+      id_aloja,
+      inicio: fecha_inicio,
+      fin: fecha_fin
+    });
+
+    if (choque) {
+      throw new reservaError("El alojamiento ya está ocupado en esas fechas", 400);
     }
 
-    static async consultarPorId ({id}){
-        const result = await reservaModel.buscarreservaPorId({id})    
-        return result
-    }
+    const nueva = await reservaModel.insertarReserva({
+      id_usuario,
+      id_aloja,
+      fecha_inicio,
+      fecha_fin,
+      precio_total
+    });
 
-    static async actualizarNombrePorId ({nombre, id}){
+    return nueva;
+  }
 
-        //Verificar si existe el usuario
-        const result = await reservaModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new reservaError("El usuario no existe", 401) }
-        
-        //Actualizar el nombre del usuario
-        const actualizacion = await reservaModel.actualizarNombrePorId({ nombre, id })
-        if(!actualizacion.status){ throw new reservaError(actualizacion.message, 401) }
-        
-        //Obtener la informacion del usuario
-        const info = await reservaModel.buscarreservaPorId({id})    
-        return info
-    }
+  static async consultar() {
+    return await reservaModel.obtenerTodas();
+  }
 
-    static async eliminarPorId ({id}){
+  static async consultarPorId({ id }) {
+    const r = await reservaModel.obtenerPorId({ id });
+    if (!r) throw new reservaError("Reserva no encontrada", 404);
+    return r;
+  }
 
-        //Verificar si existe el usuario
-        const result = await reservaModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new reservaError("El usuario no existe", 401) }
-        
-        // Eliminar el usuario por id
-        const eliminar = await reservaModel.eliminarPorId({ id })
-        if(!eliminar.status){ throw new reservaError(eliminar.message, 401) }
-          
-        return {id: id, message: eliminar.message}
-    }
+  static async editarFechas({ id, fecha_inicio, fecha_fin }) {
+    const ok = await reservaModel.actualizarFechas({ id, fecha_inicio, fecha_fin });
+    if (!ok) throw new reservaError("No se pudo actualizar la reserva", 400);
+    return this.consultarPorId({ id });
+  }
+
+  static async eliminar({ id }) {
+    const ok = await reservaModel.eliminar({ id });
+    if (!ok) throw new reservaError("No existe la reserva", 404);
+    return { id, message: "Reserva eliminada" };
+  }
 }
-

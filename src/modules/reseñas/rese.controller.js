@@ -1,107 +1,68 @@
-import { validatereseId, validatereseNombreId, errorFlattenError} from './rese.schema.js'
-import { reseService } from './rese.service.js'
+import { reseService } from "./rese.service.js"
+import {
+  validarCrearRese,
+  validarEditarRese,
+  validarIdRese,
+  errorFlattenError
+} from "./rese.schema.js"
 
-export class ReseController {
-
-  consultar = async (req, res, next) => {
-
-    try {
-
-      const { id } = req.body;
-
-      let resultado;
-
-      if (id) {
-        
-        const result = validatereseId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await reseService.consultarPorId({id})
-
-      } else {
-        resultado = await reseService.consultar()
-      }
-
-      res.status(201).json({
-        status: "success", 
-        rese: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
+export class reseController {
 
   crear = async (req, res, next) => {
-
     try {
+      const result = validarCrearRese(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const { id } = req.body;
+      const data = result.data;
+      const nueva = await reseService.crear(data);
 
-      let resultado;
+      res.status(201).json({ status: "success", rese: nueva });
 
-      if (id) {
-        
-        const result = validatereseId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await reseService.consultarPorId({id})
+    } catch (error) { next(error); }
+  };
 
-      } else {
-        resultado = await reseService.consultar()
-      }
+  consultar = async (req, res, next) => {
+    try {
+      const lista = await reseService.consultar();
+      res.status(200).json({ status: "success", reseñas: lista });
 
-      res.status(201).json({
-        status: "success", 
-        rese: resultado
-      })
+    } catch (error) { next(error); }
+  };
 
-    } catch (error) {
-      next(error)
-    }
+  consultarPorId = async (req, res, next) => {
+    try {
+      const result = validarIdRese(req.params);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-  }
+      const r = await reseService.consultarPorId(result.data);
+      res.status(200).json({ status: "success", reseña: r });
+
+    } catch (error) { next(error); }
+  };
 
   editar = async (req, res, next) => {
-
     try {
+      const result = validarEditarRese(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatereseNombreId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const { nombre, id} = req.body
-      const resultado = await reseService.actualizarNombrePorId({nombre, id})
+      const r = await reseService.editar(result.data);
+      res.status(200).json({ status: "success", reseña: r });
 
-      res.status(201).json({
-        status: "success", 
-        rese: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
+    } catch (error) { next(error); }
+  };
 
   eliminar = async (req, res, next) => {
-
     try {
+      const result = validarIdRese(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatereseId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const {id} = req.body
-      const resultado = await reseService.eliminarPorId({id})
+      const r = await reseService.eliminar(result.data);
+      res.status(200).json({ status: "success", reseña: r });
 
-      res.status(201).json({
-        status: "success", 
-        rese: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
-
+    } catch (error) { next(error); }
+  };
 }
-

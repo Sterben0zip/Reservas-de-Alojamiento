@@ -1,143 +1,126 @@
-import { getConnection  } from '../../config/database.js'
-import { QueryError } from '../../core/errors/connection.error.js'
+import { getConnection } from "../../config/database.js";
+import { QueryError } from "../../core/errors/connection.error.js";
 import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js";
+import crypto from "crypto";
 
 export class alojaModel {
 
-  static async buscaralojaPorNombre () {
-
+  static async insertar({ id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios }) {
     const conn = await getConnection();
 
-    try { 
-      
-      const [rows] = await conn.query('SELECT id, nombre FROM aloja ORDER BY nombre')
-     
-      const aloja = rows.map(usuario => ({
-          ...usuario,
-          id: bufferToUuid(usuario.id)  // convertir binary → uuid string
+    try {
+      const id = crypto.randomUUID();
+
+      await conn.query(
+        `INSERT INTO aloja (id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          uuidToBuffer(id),
+          uuidToBuffer(id_host),
+          titulo,
+          descripcion,
+          precio,
+          capacidad,
+          ubicacion,
+          JSON.stringify(servicios)
+        ]
+      );
+
+      return { id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios };
+
+    } catch (error) {
+      throw new QueryError("Error al crear alojamiento", 502, error);
+    }
+  }
+
+  static async buscarTodos() {
+    const conn = await getConnection();
+
+    try {
+      const [rows] = await conn.query(`
+        SELECT id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios
+        FROM aloja
+        ORDER BY creado_en DESC
+      `);
+
+      return rows.map(a => ({
+        ...a,
+        id: bufferToUuid(a.id),
+        id_host: bufferToUuid(a.id_host),
+        servicios: JSON.parse(a.servicios)
       }));
 
-      return aloja
-
     } catch (error) {
-      throw new QueryError('Error al consulta la existencia de los aloja', 502, error)
+      throw new QueryError("Error al obtener alojamientos", 502, error);
     }
   }
 
-  static async buscaralojaPorId ({id}) {
-
+  static async buscarPorId({ id }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [rows] = await conn.query(
-        'SELECT id, nombre FROM aloja WHERE id = ?',
+        `SELECT id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios
+         FROM aloja 
+         WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      if(rows.length === 0) return []
+      if (rows.length === 0) return null;
 
-      const usuario = rows[0];
+      const a = rows[0];
 
-      // Convertir BINARY → UUID string
-      usuario.id = bufferToUuid(usuario.id);
+      return {
+        ...a,
+        id: bufferToUuid(a.id),
+        id_host: bufferToUuid(a.id_host),
+        servicios: JSON.parse(a.servicios)
+      };
 
-      return usuario
-  
     } catch (error) {
-      throw new QueryError('Error al buscar un usuario por id', 502, error)
-    }
-
-  }
-
-  static async existeUsuarioPorId ({ id }) {
-
-    const conn = await getConnection();
-
-    try { 
-      const [user] = await conn.query(
-        'SELECT EXISTS(SELECT 1 FROM aloja WHERE id = ?) AS user_exists;',
-        [uuidToBuffer(id)]
-      )
-
-      const [{ user_exists }] = user
-      return user_exists === 1 ? true : false
-    
-    } catch (error) {
-      throw new QueryError('Error al consulta la existencia de un usuario', 502, error)
+      throw new QueryError("Error al buscar alojamiento por id", 502, error);
     }
   }
 
-  static async actualizarNombrePorId ({nombre, id}) {
-
+  static async actualizar({ id, titulo, descripcion, precio, capacidad, ubicacion, servicios }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [result] = await conn.query(
-        `UPDATE aloja 
-        SET nombre = ?
-        WHERE id = ? `,
-        [nombre, uuidToBuffer(id)]
-      )
+        `UPDATE aloja
+         SET titulo = ?, descripcion = ?, precio = ?, capacidad = ?, ubicacion = ?, servicios = ?
+         WHERE id = ?`,
+        [
+          titulo,
+          descripcion,
+          precio,
+          capacidad,
+          ubicacion,
+          JSON.stringify(servicios),
+          uuidToBuffer(id)
+        ]
+      );
 
-      if (result.affectedRows === 0) {
-        return { status: false, message: "No se encontró el usuario" };
-      }else if(result.affectedRows === 1 && result.changedRows === 0){
-        return { status: false, message: "Datos iguales, no hubo cambios" };
-      }
-
-      return { status: true, message: "Usuario actualizado" };
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al actualizar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al actualizar alojamiento", 502, error);
     }
-
   }
 
-  static async eliminarPorId ({id}) {
-
+  static async eliminar({ id }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [result] = await conn.query(
-       `DELETE FROM aloja WHERE id = ?`,
+        `DELETE FROM aloja WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      // Validaciones de resultado
-      if (result.affectedRows === 0) {
-        return { status: false, message: "Usuario no encontrado" };
-      }
-
-      return { status: true, message: "Usuario eliminado correctamente" };
-      
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al eliminar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al eliminar alojamiento", 502, error);
     }
-
   }
-  
-static async insertarAloja({ nombre }) {
-
-  const conn = await getConnection();
-
-  try {
-    const id = crypto.randomUUID();
-
-    await conn.query(
-      `INSERT INTO aloja (id, nombre) VALUES (?, ?)`,
-      [uuidToBuffer(id), nombre]
-    )
-
-    return { id, nombre }
-
-  } catch (error) {
-    throw new QueryError("Error al crear el alojamiento", 502, error)
-  }
-}
-
-
 }

@@ -1,22 +1,23 @@
-import z from 'zod'
+import { z } from "zod";
 
-const reservaIdSchema = z.object({
-  id: z.string().min(1)
-})
+export const validarCrearReserva = (data) => z.object({
+  id_usuario: z.string().uuid(),
+  id_aloja: z.string().uuid(),
+  fecha_inicio: z.string().date(),
+  fecha_fin: z.string().date(),
+  precio_total: z.number().positive()
+}).safeParse(data);
 
-const reservaNombreIdSchema = z.object({
-  id: z.string().min(1), 
-  nombre: z.string().min(1)
-})
+export const validarEditarReserva = (data) => z.object({
+  id: z.string().uuid(),
+  fecha_inicio: z.string().date(),
+  fecha_fin: z.string().date()
+}).safeParse(data);
 
-export function validatereservaId (input) {
-  return reservaIdSchema.safeParse(input)
+export const validarIdReserva = (data) => z.object({
+  id: z.string().uuid()
+}).safeParse(data);
+
+export function errorFlattenError(err) {
+  return err.flatten().fieldErrors;
 }
-export function validatereservaNombreId (input) {
-  return reservaNombreIdSchema.safeParse(input)
-}
-
-export function errorFlattenError (result){
-  return z.flattenError(result)
-}
-

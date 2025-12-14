@@ -39,10 +39,10 @@ export class AuthController {
     }
     */
 
-    const { usuario, password, nombre, role} = req.body
+    const { usuario, password, nombre, id_rol} = req.body
 
     try {
-      const user = await AuthService.register({usuario, password, nombre, role})
+      const user = await AuthService.register({usuario, password, nombre, id_rol})
       res.status(201).json({
         status: "success", 
         id: user

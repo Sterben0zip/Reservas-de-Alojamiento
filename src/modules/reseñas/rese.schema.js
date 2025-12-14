@@ -1,22 +1,22 @@
-import z from 'zod'
+import { z } from "zod";
 
-const reseIdSchema = z.object({
-  id: z.string().min(1)
-})
+export const validarCrearRese = (data) => z.object({
+  id_usuario: z.string().uuid(),
+  id_aloja: z.string().uuid(),
+  rating: z.number().int().min(1).max(5),
+  comentario: z.string().min(3)
+}).safeParse(data);
 
-const reseNombreIdSchema = z.object({
-  id: z.string().min(1), 
-  nombre: z.string().min(1)
-})
+export const validarEditarRese = (data) => z.object({
+  id: z.string().uuid(),
+  rating: z.number().int().min(1).max(5),
+  comentario: z.string().min(3)
+}).safeParse(data);
 
-export function validatereseId (input) {
-  return reseIdSchema.safeParse(input)
-}
-export function validatereseNombreId (input) {
-  return reseNombreIdSchema.safeParse(input)
-}
+export const validarIdRese = (data) => z.object({
+  id: z.string().uuid()
+}).safeParse(data);
 
-export function errorFlattenError (result){
-  return z.flattenError(result)
-}
-
+export const errorFlattenError = (err) => {
+  return err.flatten().fieldErrors;
+};

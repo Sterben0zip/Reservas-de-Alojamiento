@@ -1,124 +1,124 @@
-import { getConnection  } from '../../config/database.js'
-import { QueryError } from '../../core/errors/connection.error.js'
-import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js";
+import { getConnection } from "../../config/database.js"
+import { QueryError } from "../../core/errors/connection.error.js"
+import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js"
+import crypto from "crypto"
 
-export class UsuariosModel {
+export class usuariosModel {
 
-  static async buscarUsuariosPorNombre () {
-
+  static async insertarUsuario({ nombre, correo, contrasena, rol }) {
     const conn = await getConnection();
 
-    try { 
-      
-      const [rows] = await conn.query('SELECT id, nombre FROM usuarios ORDER BY nombre')
-     
-      const usuarios = rows.map(usuario => ({
-          ...usuario,
-          id: bufferToUuid(usuario.id)  // convertir binary → uuid string
+    try {
+      const id = crypto.randomUUID();
+
+      await conn.query(
+        `INSERT INTO usuarios (id, nombre, correo, contrasena, rol)
+         VALUES (?, ?, ?, ?, ?)`,
+        [uuidToBuffer(id), nombre, correo, contrasena, rol]
+      );
+
+      return { id, nombre, correo, rol };
+
+    } catch (error) {
+      throw new QueryError("Error al registrar usuario", 502, error);
+    }
+  }
+
+  static async buscarTodos() {
+    const conn = await getConnection();
+
+    try {
+      const [rows] = await conn.query(`
+        SELECT id, nombre, correo, rol
+        FROM usuarios
+        ORDER BY creado_en DESC
+      `);
+
+      return rows.map(u => ({
+        ...u,
+        id: bufferToUuid(u.id)
       }));
 
-      return usuarios
-
     } catch (error) {
-      throw new QueryError('Error al consulta la existencia de los usuarios', 502, error)
+      throw new QueryError("Error al consultar usuarios", 502, error);
     }
   }
 
-  static async buscarUsuariosPorId ({id}) {
-
+  static async buscarPorCorreo({ correo }) {
     const conn = await getConnection();
 
-    try { 
+    try {
+      const [rows] = await conn.query(`
+        SELECT id, nombre, correo, contrasena, rol
+        FROM usuarios
+        WHERE correo = ?
+      `, [correo]);
 
+      if (rows.length === 0) return null;
+
+      const u = rows[0];
+      return {
+        ...u,
+        id: bufferToUuid(u.id)
+      };
+
+    } catch (error) {
+      throw new QueryError("Error al buscar usuario por correo", 502, error);
+    }
+  }
+
+  static async buscarPorId({ id }) {
+    const conn = await getConnection();
+
+    try {
       const [rows] = await conn.query(
-        'SELECT id, nombre FROM usuarios WHERE id = ?',
+        `SELECT id, nombre, correo, rol
+         FROM usuarios WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      if(rows.length === 0) return []
+      if (rows.length === 0) return null;
 
-      const usuario = rows[0];
+      const u = rows[0];
+      return {
+        ...u,
+        id: bufferToUuid(u.id)
+      };
 
-      // Convertir BINARY → UUID string
-      usuario.id = bufferToUuid(usuario.id);
-
-      return usuario
-  
     } catch (error) {
-      throw new QueryError('Error al buscar un usuario por id', 502, error)
-    }
-
-  }
-
-  static async existeUsuarioPorId ({ id }) {
-
-    const conn = await getConnection();
-
-    try { 
-      const [user] = await conn.query(
-        'SELECT EXISTS(SELECT 1 FROM usuarios WHERE id = ?) AS user_exists;',
-        [uuidToBuffer(id)]
-      )
-
-      const [{ user_exists }] = user
-      return user_exists === 1 ? true : false
-    
-    } catch (error) {
-      throw new QueryError('Error al consulta la existencia de un usuario', 502, error)
+      throw new QueryError("Error al buscar usuario por id", 502, error);
     }
   }
 
-  static async actualizarNombrePorId ({nombre, id}) {
-
+  static async actualizar({ id, nombre }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [result] = await conn.query(
-        `UPDATE usuarios 
-        SET nombre = ?
-        WHERE id = ? `,
+        `UPDATE usuarios SET nombre = ? WHERE id = ?`,
         [nombre, uuidToBuffer(id)]
-      )
+      );
 
-      if (result.affectedRows === 0) {
-        return { status: false, message: "No se encontró el usuario" };
-      }else if(result.affectedRows === 1 && result.changedRows === 0){
-        return { status: false, message: "Datos iguales, no hubo cambios" };
-      }
-
-      return { status: true, message: "Usuario actualizado" };
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al actualizar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al actualizar usuario", 502, error);
     }
-
   }
 
-  static async eliminarPorId ({id}) {
-
+  static async eliminar({ id }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [result] = await conn.query(
-       `DELETE FROM usuarios WHERE id = ?`,
+        `DELETE FROM usuarios WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      // Validaciones de resultado
-      if (result.affectedRows === 0) {
-        return { status: false, message: "Usuario no encontrado" };
-      }
-
-      return { status: true, message: "Usuario eliminado correctamente" };
-      
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al eliminar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al eliminar usuario", 502, error);
     }
-
   }
-
-
 }

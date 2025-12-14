@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:3000
+
+
+### Crear Alojamiento
+POST {{baseUrl}}/alojamientos/crear
+Content-Type: application/json
+
+{
+    "id_host": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
+    "titulo": "Titulo",
+    "descripcion": "Descripcion",
+    "precio": 100,
+    "capacidad": 1,
+    "ubicacion": "Ubicacion", 
+    "servicios": [
+        "WiFi",
+        "Estacionamiento",
+        "Piscina"
+    ]
+}

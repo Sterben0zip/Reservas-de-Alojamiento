@@ -1,124 +1,139 @@
-import { getConnection  } from '../../config/database.js'
-import { QueryError } from '../../core/errors/connection.error.js'
+import { getConnection } from "../../config/database.js";
+import { QueryError } from "../../core/errors/connection.error.js";
 import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js";
+import crypto from "crypto";
 
 export class reservaModel {
 
-  static async buscarreservaPorNombre () {
-
+  static async insertarReserva({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
     const conn = await getConnection();
 
-    try { 
-      
-      const [rows] = await conn.query('SELECT id, nombre FROM reserva ORDER BY nombre')
-     
-      const reserva = rows.map(usuario => ({
-          ...usuario,
-          id: bufferToUuid(usuario.id)  // convertir binary → uuid string
+    try {
+      const id = crypto.randomUUID();
+
+      await conn.query(
+        `INSERT INTO reservas (id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          uuidToBuffer(id),
+          uuidToBuffer(id_usuario),
+          uuidToBuffer(id_aloja),
+          fecha_inicio,
+          fecha_fin,
+          precio_total
+        ]
+      );
+
+      return { id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total };
+
+    } catch (error) {
+      throw new QueryError("Error al crear la reserva", 502, error);
+    }
+  }
+
+  static async obtenerTodas() {
+    const conn = await getConnection();
+    try {
+      const [rows] = await conn.query(`
+        SELECT 
+          id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total
+        FROM reservas
+        ORDER BY creado_en DESC
+      `);
+
+      return rows.map(r => ({
+        ...r,
+        id: bufferToUuid(r.id),
+        id_usuario: bufferToUuid(r.id_usuario),
+        id_aloja: bufferToUuid(r.id_aloja)
       }));
 
-      return reserva
-
     } catch (error) {
-      throw new QueryError('Error al consulta la existencia de los reserva', 502, error)
+      throw new QueryError("Error al obtener reservas", 502, error);
     }
   }
 
-  static async buscarreservaPorId ({id}) {
-
+  static async obtenerPorId({ id }) {
     const conn = await getConnection();
-
-    try { 
-
+    try {
       const [rows] = await conn.query(
-        'SELECT id, nombre FROM reserva WHERE id = ?',
+        `SELECT id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total
+         FROM reservas WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      if(rows.length === 0) return []
+      if (rows.length === 0) return null;
 
-      const usuario = rows[0];
+      const r = rows[0];
+      return {
+        ...r,
+        id: bufferToUuid(r.id),
+        id_usuario: bufferToUuid(r.id_usuario),
+        id_aloja: bufferToUuid(r.id_aloja)
+      };
 
-      // Convertir BINARY → UUID string
-      usuario.id = bufferToUuid(usuario.id);
-
-      return usuario
-  
     } catch (error) {
-      throw new QueryError('Error al buscar un usuario por id', 502, error)
-    }
-
-  }
-
-  static async existeUsuarioPorId ({ id }) {
-
-    const conn = await getConnection();
-
-    try { 
-      const [user] = await conn.query(
-        'SELECT EXISTS(SELECT 1 FROM reserva WHERE id = ?) AS user_exists;',
-        [uuidToBuffer(id)]
-      )
-
-      const [{ user_exists }] = user
-      return user_exists === 1 ? true : false
-    
-    } catch (error) {
-      throw new QueryError('Error al consulta la existencia de un usuario', 502, error)
+      throw new QueryError("Error al obtener una reserva por id", 502, error);
     }
   }
 
-  static async actualizarNombrePorId ({nombre, id}) {
-
+  static async existeChoqueFechas({ id_aloja, inicio, fin }) {
     const conn = await getConnection();
 
-    try { 
+    try {
+      const [rows] = await conn.query(
+        `SELECT COUNT(*) AS choques
+         FROM reservas
+         WHERE id_aloja = ?
+         AND (
+            (fecha_inicio <= ? AND fecha_fin >= ?) OR
+            (fecha_inicio <= ? AND fecha_fin >= ?)
+         )`,
+        [
+          uuidToBuffer(id_aloja),
+          inicio, inicio,
+          fin, fin
+        ]
+      );
 
+      return rows[0].choques > 0;
+
+    } catch (error) {
+      throw new QueryError("Error al validar fechas", 502, error);
+    }
+  }
+
+  static async actualizarFechas({ id, fecha_inicio, fecha_fin }) {
+    const conn = await getConnection();
+
+    try {
       const [result] = await conn.query(
-        `UPDATE reserva 
-        SET nombre = ?
-        WHERE id = ? `,
-        [nombre, uuidToBuffer(id)]
-      )
+        `UPDATE reservas
+         SET fecha_inicio = ?, fecha_fin = ?
+         WHERE id = ?`,
+        [fecha_inicio, fecha_fin, uuidToBuffer(id)]
+      );
 
-      if (result.affectedRows === 0) {
-        return { status: false, message: "No se encontró el usuario" };
-      }else if(result.affectedRows === 1 && result.changedRows === 0){
-        return { status: false, message: "Datos iguales, no hubo cambios" };
-      }
-
-      return { status: true, message: "Usuario actualizado" };
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al actualizar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al actualizar fechas de reserva", 502, error);
     }
-
   }
 
-  static async eliminarPorId ({id}) {
-
+  static async eliminar({ id }) {
     const conn = await getConnection();
 
-    try { 
-
+    try {
       const [result] = await conn.query(
-       `DELETE FROM reserva WHERE id = ?`,
+        `DELETE FROM reservas WHERE id = ?`,
         [uuidToBuffer(id)]
-      )
+      );
 
-      // Validaciones de resultado
-      if (result.affectedRows === 0) {
-        return { status: false, message: "Usuario no encontrado" };
-      }
-
-      return { status: true, message: "Usuario eliminado correctamente" };
-      
+      return result.affectedRows > 0;
 
     } catch (error) {
-      throw new QueryError('Error al eliminar el nombre del usuario por id', 502, error)
+      throw new QueryError("Error al eliminar reserva", 502, error);
     }
-
   }
-
-
 }

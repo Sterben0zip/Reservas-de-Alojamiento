@@ -9,7 +9,7 @@ Content-Type: application/json
     "usuario":"user",
     "password":"123",
     "nombre":"user",
-    "role":"1"
+    "id_rol":"1"
 }
 
 ### Login whit user_name

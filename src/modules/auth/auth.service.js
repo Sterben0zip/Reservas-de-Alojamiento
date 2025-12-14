@@ -20,11 +20,11 @@ export class AuthService {
 
   }
 
-  static async register ({ usuario, password, nombre, role } ){
+  static async register ({ usuario, password, nombre, id_rol } ){
 
     const result = await AuthModel.existeUsuario({ usuario })  
     if(result){ throw new AuthError("El usuario ya existe", 401) }
-    return await AuthModel.crearUsuario({ usuario, password, nombre, role })   
+    return await AuthModel.crearUsuario({ usuario, password, nombre, id_rol })   
 
   }
 

@@ -12,7 +12,7 @@ export class AuthModel {
 
     try { 
       const [result] = await conn.query(
-        'SELECT id,password,nombre,role FROM usuarios WHERE usuario = ?;',
+        'SELECT id,password,nombre,id_rol FROM usuarios WHERE usuario = ?;',
         [usuario]
       )
 
@@ -23,7 +23,7 @@ export class AuthModel {
         id: bufferToUuid(user.id),
         password: user.password, 
         nombre: user.nombre,
-        role: user.role
+        id_rol: user.id_rol
       }
     
     } catch (error) {
@@ -33,7 +33,7 @@ export class AuthModel {
   
   static async existeUsuario ({ usuario }) {
 
-    const conn = await getConnection();
+   const conn = await getConnection();
 
     try { 
       const [user] = await conn.query(
@@ -49,7 +49,7 @@ export class AuthModel {
     }
   }
 
-  static async crearUsuario ({ usuario, password, nombre, role}){
+  static async crearUsuario ({ usuario, password, nombre, id_rol}){
 
     const uuid = crypto.randomUUID()
     const hashedPassword = await bcrypt.hash(password, 10)     
@@ -58,8 +58,8 @@ export class AuthModel {
     try { 
      
       const [result] = await conn.query(
-        `INSERT INTO usuarios (id, usuario, password, nombre, role) VALUES (?, ?, ?, ?, ?);`,
-        [uuidToBuffer(uuid),usuario, hashedPassword, nombre, role]
+        `INSERT INTO usuarios (id, usuario, password, nombre, id_rol) VALUES (?, ?, ?, ?, ?);`,
+        [uuidToBuffer(uuid),usuario, hashedPassword, nombre, id_rol]
       )
 
       if(result.affectedRows === 0){

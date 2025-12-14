@@ -1,78 +1,66 @@
-import { validateUsuarioId, validateUsuarioNombreId, errorFlattenError} from './usuarios.schema.js'
-import { UsuariosService } from './usuarios.service.js'
+import {
+  validarCrearUsuario,
+  validarEditarUsuario,
+  validarIdUsuario,
+  errorFlattenError
+} from "./usuarios.schema.js"
+import { usuariosService } from "./usuarios.service.js"
 
-export class UsuariosController {
+export class usuariosController {
+
+  crear = async (req, res, next) => {
+    try {
+      const result = validarCrearUsuario(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
+
+      const nuevo = await usuariosService.registrar(result.data);
+      res.status(201).json({ status: "success", usuario: nuevo });
+
+    } catch (error) { next(error); }
+  };
 
   consultar = async (req, res, next) => {
-
     try {
+      const lista = await usuariosService.consultar();
+      res.status(200).json({ status: "success", usuarios: lista });
 
-      const { id } = req.body;
+    } catch (error) { next(error); }
+  };
 
-      let resultado;
+  consultarPorId = async (req, res, next) => {
+    try {
+      const result = validarIdUsuario(req.params);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      if (id) {
-        
-        const result = validateUsuarioId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await UsuariosService.consultarPorId({id})
+      const u = await usuariosService.consultarPorId(result.data);
+      res.status(200).json({ status: "success", usuario: u });
 
-      } else {
-        resultado = await UsuariosService.consultar()
-      }
-
-      res.status(201).json({
-        status: "success", 
-        usuarios: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
+    } catch (error) { next(error); }
+  };
 
   editar = async (req, res, next) => {
-
     try {
+      const result = validarEditarUsuario(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validateUsuarioNombreId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const { nombre, id} = req.body
-      const resultado = await UsuariosService.actualizarNombrePorId({nombre, id})
+      const u = await usuariosService.editar(result.data);
+      res.status(200).json({ status: "success", usuario: u });
 
-      res.status(201).json({
-        status: "success", 
-        usuarios: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
+    } catch (error) { next(error); }
+  };
 
   eliminar = async (req, res, next) => {
-
     try {
+      const result = validarIdUsuario(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validateUsuarioId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const {id} = req.body
-      const resultado = await UsuariosService.eliminarPorId({id})
+      const r = await usuariosService.eliminar(result.data);
+      res.status(200).json({ status: "success", usuario: r });
 
-      res.status(201).json({
-        status: "success", 
-        usuario: resultado
-      })
-
-    } catch (error) {
-      next(error)
-    }
-
-  }
-
+    } catch (error) { next(error); }
+  };
 }
-

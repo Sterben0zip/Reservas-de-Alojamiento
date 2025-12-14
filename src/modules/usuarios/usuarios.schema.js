@@ -1,22 +1,19 @@
-import z from 'zod'
+import { z } from "zod";
 
-const usuarioIdSchema = z.object({
-  id: z.string().min(1)
-})
+export const validarCrearUsuario = (data) => z.object({
+  nombre: z.string().min(2),
+  correo: z.string().email(),
+  contrasena: z.string().min(6),
+  rol: z.enum(["CLIENTE", "HOST"]).default("CLIENTE")
+}).safeParse(data);
 
-const usuarioNombreIdSchema = z.object({
-  id: z.string().min(1), 
-  nombre: z.string().min(1)
-})
+export const validarEditarUsuario = (data) => z.object({
+  id: z.string().uuid(),
+  nombre: z.string().min(2)
+}).safeParse(data);
 
-export function validateUsuarioId (input) {
-  return usuarioIdSchema.safeParse(input)
-}
-export function validateUsuarioNombreId (input) {
-  return usuarioNombreIdSchema.safeParse(input)
-}
+export const validarIdUsuario = (data) => z.object({
+  id: z.string().uuid()
+}).safeParse(data);
 
-export function errorFlattenError (result){
-  return z.flattenError(result)
-}
-
+export const errorFlattenError = (err) => err.flatten().fieldErrors;

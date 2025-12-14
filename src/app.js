@@ -5,7 +5,7 @@ import { errorHandlerMiddleware } from './core/middlewares/errorHandler.js';
 
 import { authRouter } from './modules/auth/auth.routes.js'
 import { usuariosRouter } from './modules/usuarios/usuarios.routes.js'
-import { alojaRouter } from './modules/alojamientos/aloja.routes.js'
+import { alojamientosRouter } from './modules/alojamientos/aloja.routes.js'
 import { reseRouter } from './modules/reseñas/rese.routes.js'
 import { reservaRouter } from './modules/reservas/reserva.routes.js'
 
@@ -17,7 +17,7 @@ app.disable('x-powered-by')
 
 app.use('/auth', authRouter())
 app.use('/usuarios', usuariosRouter())
-app.use('/alojamientos', alojaRouter())
+app.use('/alojamientos', alojamientosRouter())
 app.use('/reseñas', reseRouter())
 app.use('/reservas', reservaRouter())
 

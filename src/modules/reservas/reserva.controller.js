@@ -1,106 +1,73 @@
-import { validatereservaId, validatereservaNombreId, errorFlattenError} from './reserva.schema.js'
-import { reservaService } from './reserva.service.js'
+import { reservaService } from "./reserva.service.js";
+import { validarCrearReserva, validarIdReserva, validarEditarReserva, errorFlattenError } from "./reserva.schema.js";
 
-export class ReservaController {
+export class reservaController {
+
+  crear = async (req, res, next) => {
+    try {
+      const result = validarCrearReserva(req.body);
+      if (!result.success)
+        return res.status(400).json({ status: "error", error: errorFlattenError(result.error) });
+
+      const data = result.data;
+      const nueva = await reservaService.crear(data);
+
+      res.status(201).json({ status: "success", reserva: nueva });
+
+    } catch (error) {
+      next(error);
+    }
+  };
 
   consultar = async (req, res, next) => {
-
     try {
-
-      const { id } = req.body;
-
-      let resultado;
-
-      if (id) {
-        
-        const result = validatereservaId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await reservaService.consultarPorId({id})
-
-      } else {
-        resultado = await reservaService.consultar()
-      }
-
-      res.status(201).json({
-        status: "success", 
-        reserva: resultado
-      })
+      const lista = await reservaService.consultar();
+      res.status(200).json({ status: "success", reservas: lista });
 
     } catch (error) {
-      next(error)
+      next(error);
     }
+  };
 
-  }
-
-    crear = async (req, res, next) => {
-
+  consultarPorId = async (req, res, next) => {
     try {
+      const result = validarIdReserva(req.params);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const { id } = req.body;
-
-      let resultado;
-
-      if (id) {
-        
-        const result = validatereseId(req.body)
-        if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-        resultado = await reseService.consultarPorId({id})
-
-      } else {
-        resultado = await reseService.consultar()
-      }
-
-      res.status(201).json({
-        status: "success", 
-        rese: resultado
-      })
+      const reserva = await reservaService.consultarPorId(result.data);
+      res.status(200).json({ status: "success", reserva });
 
     } catch (error) {
-      next(error)
+      next(error);
     }
-
-  }
+  };
 
   editar = async (req, res, next) => {
-
     try {
+      const result = validarEditarReserva(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatereservaNombreId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const { nombre, id} = req.body
-      const resultado = await reservaService.actualizarNombrePorId({nombre, id})
-
-      res.status(201).json({
-        status: "success", 
-        reserva: resultado
-      })
+      const reserva = await reservaService.editarFechas(result.data);
+      res.status(200).json({ status: "success", reserva });
 
     } catch (error) {
-      next(error)
+      next(error);
     }
-
-  }
+  };
 
   eliminar = async (req, res, next) => {
-
     try {
+      const result = validarIdReserva(req.body);
+      if (!result.success)
+        return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validatereservaId(req.body)
-      if (!result.success) {return res.status(400).json({ status: "error_bad_request ", error: errorFlattenError(result.error)})}
-      
-      const {id} = req.body
-      const resultado = await reservaService.eliminarPorId({id})
-
-      res.status(201).json({
-        status: "success", 
-        reserva: resultado
-      })
+      const r = await reservaService.eliminar(result.data);
+      res.status(200).json({ status: "success", reserva: r });
 
     } catch (error) {
-      next(error)
+      next(error);
     }
-
-  }
-
+  };
 }

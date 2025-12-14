@@ -1,55 +1,32 @@
-import { alojaModel } from './aloja.model.js'
-import { alojaError } from './aloja.error.js'
+import { alojaModel } from "./aloja.model.js";
+import { alojaError } from "./aloja.error.js";
 
 export class alojaService {
-    
-    static async consultar (){
-        const result = await alojaModel.buscaralojaPorNombre()    
-        return result
-    }
 
-    static async consultarPorId ({id}){
-        const result = await alojaModel.buscaralojaPorId({id})    
-        return result
-    }
+  static async crear(data) {
+    const nuevo = await alojaModel.insertar(data);
+    return nuevo;
+  }
 
-    static async actualizarNombrePorId ({nombre, id}){
+  static async consultar() {
+    return await alojaModel.buscarTodos();
+  }
 
-        //Verificar si existe el usuario
-        const result = await alojaModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new alojaError("El usuario no existe", 401) }
-        
-        //Actualizar el nombre del usuario
-        const actualizacion = await alojaModel.actualizarNombrePorId({ nombre, id })
-        if(!actualizacion.status){ throw new alojaError(actualizacion.message, 401) }
-        
-        //Obtener la informacion del usuario
-        const info = await alojaModel.buscaralojaPorId({id})    
-        return info
-    }
+  static async consultarPorId({ id }) {
+    const res = await alojaModel.buscarPorId({ id });
+    if (!res) throw new alojaError("Alojamiento no encontrado", 404);
+    return res;
+  }
 
-    static async eliminarPorId ({id}){
+  static async editar(data) {
+    const ok = await alojaModel.actualizar(data);
+    if (!ok) throw new alojaError("No se pudo actualizar el alojamiento", 400);
+    return this.consultarPorId({ id: data.id });
+  }
 
-        //Verificar si existe el usuario
-        const result = await alojaModel.existeUsuarioPorId({ id })  
-        if(!result){ throw new alojaError("El usuario no existe", 401) }
-        
-        // Eliminar el usuario por id
-        const eliminar = await alojaModel.eliminarPorId({ id })
-        if(!eliminar.status){ throw new alojaError(eliminar.message, 401) }
-          
-        return {id: id, message: eliminar.message}
-    }
-    
-    static async crearAloja({ nombre }) {
-
-    // OPCIONAL: validar que no exista
-    // const existe = await alojaModel.buscarPorNombre({ nombre })
-    // if (existe) throw new alojaError("El alojamiento ya existe", 400)
-
-    const nuevo = await alojaModel.insertarAloja({ nombre })
-
-    return nuevo
-}
-
+  static async eliminar({ id }) {
+    const ok = await alojaModel.eliminar({ id });
+    if (!ok) throw new alojaError("No existe el alojamiento", 404);
+    return { id, message: "Alojamiento eliminado correctamente" };
+  }
 }

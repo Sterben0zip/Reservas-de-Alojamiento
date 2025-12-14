@@ -6,7 +6,7 @@ const authRegisterSchema = z.object({
   usuario: z.string().min(1),
   password: z.string().min(1),
   nombre: z.string(),
-  role: z.number().int().refine(val => validRoles.includes(val), {
+  id_rol: z.number().int().refine(val => validRoles.includes(val), {
     message: "Rol inválido"
   })
 });
