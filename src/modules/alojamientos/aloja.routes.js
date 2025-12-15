@@ -9,10 +9,10 @@ export const alojamientosRouter = () => {
   const controller = new alojaController();
 
   router.post("/crear", authCookieMiddleware, requireRole([ROLES.HOST]), controller.crear);
-  router.get("/consulta", authCookieMiddleware, requireRole([ROLES.HOST, ROLES.ADMIN]), controller.consultar);
-  router.get("/consulta:id", authCookieMiddleware, requireRole([ROLES.HOST]), controller.consultarPorId);
+  router.get("/consulta", authCookieMiddleware, requireRole([ROLES.ADMIN, ROLES.USER]), controller.consultar);
+  router.get("/consulta:id", authCookieMiddleware, requireRole([ROLES.ADMIN, ROLES.USER]), controller.consultarPorId);
   router.put("/editar", authCookieMiddleware, requireRole([ROLES.HOST]), controller.editar);
-  router.delete("/drop:id", authCookieMiddleware, requireRole([ROLES.HOST]), controller.eliminar);
+  router.delete("/drop:id", authCookieMiddleware, requireRole([ROLES.ADMIN, ROLES.ADMIN]), controller.eliminar);
 
   return router;
 };

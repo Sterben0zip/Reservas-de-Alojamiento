@@ -90,13 +90,13 @@ export class usuariosModel {
     }
   }
 
-  static async actualizar({ id, nombre }) {
+  static async actualizar({ status, id, nombre }) {
     const conn = await getConnection();
 
     try {
       const [result] = await conn.query(
-        `UPDATE usuarios SET nombre = ? WHERE id = ?`,
-        [nombre, uuidToBuffer(id)]
+        `UPDATE usuarios SET status = ? nombre = ? WHERE id = ?`,
+        [status, nombre, uuidToBuffer(id)]
       );
 
       return result.affectedRows > 0;

@@ -10,6 +10,7 @@ export const validarCrearReserva = (data) => z.object({
 
 export const validarEditarReserva = (data) => z.object({
   id: z.string().uuid(),
+  status: z.number().min(0).max (1),
   fecha_inicio: z.string().date(),
   fecha_fin: z.string().date()
 }).safeParse(data);

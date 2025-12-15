@@ -2,7 +2,6 @@
 
 ### Obtener todos los usuarios
 GET {{baseUrl}}/usuarios/consultar
-Content-Type: application/json
 
 {}
 
@@ -13,7 +12,7 @@ GET {{baseUrl}}/usuarios/consultar
 Content-Type: application/json
 
 {
-    "id":"ddd7dbd8-6bdd-44e9-b9fe-a4b8e721b08d"
+    "id":"63691c82-502a-4bf8-8b05-fd6cb30a3cb0"
 }
 
 #--------------------------------------------------#

@@ -6,15 +6,15 @@ Content-Type: application/json
 
 {
     "id_host": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
-    "titulo": "Titulo",
-    "descripcion": "Descripcion",
-    "precio": 100,
+    "titulo": "Casa corazón",
+    "descripcion": "zhy",
+    "precio": 20,
     "capacidad": 1,
-    "ubicacion": "Ubicacion", 
+    "ubicacion": "Ciudad de Mexico", 
     "servicios": [
-        "WiFi",
-        "Estacionamiento",
-        "Piscina"
+        "Antena parabolica",
+        "vaye",
+        "Cenotes"
     ]
 }
 
@@ -39,16 +39,19 @@ PUT {{baseUrl}}/alojamientos/editar
 Content-Type: application/json
 
 {
-    "id": "5e67543b63ce4853b7912b484760a385",
-    "titulo": "Titulo Actualizado",
-    "descripcion": "Descripcion Actualizada",
-    "precio": 150,
-    "capacidad": 2,
-    "ubicacion": "Ubicacion Actualizada", 
-    "servicios": [
-        "WiFi",
-        "Estacionamiento"
-    ]
+      "id": "9efaefe7-50c6-469f-80e4-77e5cf6f9713",
+      "id_host": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
+      "titulo": "Casa corazón",
+      "descripcion": "zhy",
+      "status": 1,
+      "precio": 20.00,
+      "capacidad": 1,
+      "ubicacion": "Ciudad de Mexico",
+      "servicios": [
+        "Antena parabolica",
+        "vaye",
+        "Cenotes"
+      ]
 }
 
 #--------------------------------------------------#

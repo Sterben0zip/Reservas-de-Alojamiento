@@ -26,7 +26,7 @@ export class alojaModel {
         ]
       );
 
-      return { id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios };
+      return { id, id_host, titulo, descripcion, status, precio, capacidad, ubicacion, servicios };
 
     } catch (error) {
       throw new QueryError("Error al crear alojamiento", 502, error);
@@ -38,7 +38,7 @@ export class alojaModel {
 
     try {
       const [rows] = await conn.query(`
-        SELECT id, id_host, titulo, descripcion, precio, capacidad, ubicacion, servicios
+        SELECT id, id_host, titulo, descripcion, status, precio, capacidad, ubicacion, servicios
         FROM aloja
         ORDER BY creado_en DESC
       `);
@@ -82,17 +82,18 @@ export class alojaModel {
     }
   }
 
-  static async actualizar({ id, titulo, descripcion, precio, capacidad, ubicacion, servicios }) {
+  static async actualizar({ id, titulo, descripcion, status, precio, capacidad, ubicacion, servicios }) {
     const conn = await getConnection();
 
     try {
       const [result] = await conn.query(
         `UPDATE aloja
-         SET titulo = ?, descripcion = ?, precio = ?, capacidad = ?, ubicacion = ?, servicios = ?
+         SET titulo = ?, descripcion = ?, status = ?, precio = ?, capacidad = ?, ubicacion = ?, servicios = ?
          WHERE id = ?`,
         [
           titulo,
           descripcion,
+          status,
           precio,
           capacidad,
           ubicacion,

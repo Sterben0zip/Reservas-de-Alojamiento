@@ -103,15 +103,15 @@ export class reservaModel {
     }
   }
 
-  static async actualizarFechas({ id, fecha_inicio, fecha_fin }) {
+  static async actualizarFechas({ id, status, fecha_inicio, fecha_fin }) {
     const conn = await getConnection();
 
     try {
       const [result] = await conn.query(
         `UPDATE reservas
-         SET fecha_inicio = ?, fecha_fin = ?
+         SET status=?, fecha_inicio = ?, fecha_fin = ?
          WHERE id = ?`,
-        [fecha_inicio, fecha_fin, uuidToBuffer(id)]
+        [status, fecha_inicio, fecha_fin, uuidToBuffer(id)]
       );
 
       return result.affectedRows > 0;

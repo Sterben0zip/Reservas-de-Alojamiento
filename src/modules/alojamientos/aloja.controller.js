@@ -6,7 +6,6 @@ import {
 } from "./aloja.schema.js";
 
 import { alojaService } from "./aloja.service.js";
-import { ROLES } from "../../core/roles/roles.js";
 
 export class alojaController {
 
@@ -23,7 +22,6 @@ export class alojaController {
   };
 
   consultar = async (req, res, next) => {
-    const user = req.session;
     try {
       const lista = await alojaService.consultar();
       res.status(200).json({ status: "success", alojamientos: lista });
