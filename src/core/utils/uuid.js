@@ -1,3 +1,4 @@
+import { log } from "console";
 
 // Convierte UUID string → Buffer (binario)
 export function uuidToBuffer(uuid) {
@@ -15,3 +16,17 @@ export function bufferToUuid(buffer) {
     hex.substring(20)
   ].join("-");
 }
+
+log("Hola mundo");
+// Genera un UUID v4 aleatorio
+export  async function generarUuid() {
+  const crypto = await import("crypto");
+  const buffer = crypto.randomBytes(16);
+
+  // Ajustar bits para cumplir con la versión 4 de UUID
+  buffer[6] = (buffer[6] & 0x0f) | 0x40; // Versión 4
+  buffer[8] = (buffer[8] & 0x3f) | 0x80; // Variante RFC4122
+
+  return bufferToUuid(buffer);
+}
+log('uuid.js loaded');

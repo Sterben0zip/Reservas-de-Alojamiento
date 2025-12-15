@@ -1,6 +1,5 @@
 @baseUrl = http://localhost:3000
 
-
 ### Crear Alojamiento
 POST {{baseUrl}}/alojamientos/crear
 Content-Type: application/json
@@ -17,4 +16,47 @@ Content-Type: application/json
         "Estacionamiento",
         "Piscina"
     ]
+}
+
+#--------------------------------------------------#
+
+### Obtener todos los alojamientos
+GET {{baseUrl}}/alojamientos/consulta
+
+#--------------------------------------------------#
+### Obtener alojamiento por ID
+GET {{baseUrl}}/alojamientos/consulta
+Content-Type: application/json
+
+{
+    "id": "5e67543b63ce4853b7912b484760a385"
+}
+
+#--------------------------------------------------#
+
+### Actualizar alojamiento
+PUT {{baseUrl}}/alojamientos/editar
+Content-Type: application/json
+
+{
+    "id": "5e67543b63ce4853b7912b484760a385",
+    "titulo": "Titulo Actualizado",
+    "descripcion": "Descripcion Actualizada",
+    "precio": 150,
+    "capacidad": 2,
+    "ubicacion": "Ubicacion Actualizada", 
+    "servicios": [
+        "WiFi",
+        "Estacionamiento"
+    ]
+}
+
+#--------------------------------------------------#
+
+### Eliminar alojamiento
+DELETE {{baseUrl}}/alojamientos/drop
+Content-Type: application/json
+
+{
+    "id": "5e67543b63ce4853b7912b484760a385"
 }

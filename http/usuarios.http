@@ -6,6 +6,8 @@ Content-Type: application/json
 
 {}
 
+#--------------------------------------------------#
+
 ### Obtener usuario por id
 GET {{baseUrl}}/usuarios/consultar
 Content-Type: application/json
@@ -13,6 +15,8 @@ Content-Type: application/json
 {
     "id":"ddd7dbd8-6bdd-44e9-b9fe-a4b8e721b08d"
 }
+
+#--------------------------------------------------#
 
 ### Actualizar nombre del usuario usando el id
 PUT {{baseUrl}}/usuarios/editar
@@ -22,6 +26,8 @@ Content-Type: application/json
     "id":"ddd7dbd8-6bdd-44e9-b9fe-a4b8e721b08d",
     "nombre": "User 123"
 }
+
+#--------------------------------------------------#
 
 ### Eliminar usuario usando el id
 DELETE  {{baseUrl}}/usuarios/eliminar

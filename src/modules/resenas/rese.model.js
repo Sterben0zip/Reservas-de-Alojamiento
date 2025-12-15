@@ -5,7 +5,7 @@ import crypto from "crypto"
 
 export class reseModel {
 
-  static async insertar({ id_usuario, id_aloja, rating, comentario }) {
+  static async crear({ id_usuario, id_aloja, rating, comentario }) {
     const conn = await getConnection();
     try {
       const id = crypto.randomUUID();
@@ -33,7 +33,7 @@ export class reseModel {
     const conn = await getConnection();
     try {
       const [rows] = await conn.query(`
-        SELECT id, id_usuario, id_aloja, rating, comentario, creado_en
+        SELECT id, id_usuario, id_aloja, rating, comentario, creado_en, actualizado_en
         FROM rese ORDER BY creado_en DESC
       `);
 
@@ -45,7 +45,7 @@ export class reseModel {
       }));
 
     } catch (error) {
-      throw new QueryError("Error al obtener reseñas", 502, error);
+      throw new QueryError("Error al obtener resenas", 502, error);
     }
   }
 

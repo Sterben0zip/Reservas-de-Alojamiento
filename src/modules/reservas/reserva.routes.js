@@ -6,11 +6,11 @@ export const reservaRouter = () => {
   const router = Router();
   const controller = new reservaController();
 
-  router.post("/", authCookieMiddleware, controller.crear);
-  router.get("/", controller.consultar);
-  router.get("/:id", controller.consultarPorId);
-  router.put("/", authCookieMiddleware, controller.editar);
-  router.delete("/", authCookieMiddleware, controller.eliminar);
+  router.post("/crear", authCookieMiddleware, controller.crear);
+  router.get("/consulta", controller.consultar);
+  router.get("/consulta:id", controller.consultarPorId);
+  router.put("/editar", authCookieMiddleware, controller.editar);
+  router.delete("/drop", authCookieMiddleware, controller.eliminar);
 
   return router;
 };

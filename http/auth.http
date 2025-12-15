@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3000
 
 
-### Create user
+### Crear un nuevo usuario(Host)
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
@@ -12,7 +12,7 @@ Content-Type: application/json
     "id_rol":"1"
 }
 
-### Login whit user_name
+### Login de HOST
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -20,3 +20,47 @@ Content-Type: application/json
     "usuario":"user",
     "password":"123"
 }
+
+### Crear un nuevo usuario (Admin)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "usuario":"DX",
+    "password":"123",
+    "nombre":"user",
+    "id_rol":"2"
+}
+
+### Login de ADMIN
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "usuario":"DX",
+    "password":"123"
+}
+
+
+### Crear un nuevo usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "usuario":"XD",
+    "password":"123",
+    "nombre":"user",
+    "id_rol":"3"
+}
+
+### Login de USUARIO
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "usuario":"XD",
+    "password":"123"
+}
+
+###logout de usuario
+POST {{baseUrl}}/auth/logout

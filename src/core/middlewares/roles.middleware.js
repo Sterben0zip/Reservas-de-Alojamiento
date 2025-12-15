@@ -4,7 +4,7 @@ export function requireRole(rolesPermitidos = []) {
   return (req, res, next) => {
     if (!req.user) throw new AuthError("No autenticado", 401);
 
-    if (!rolesPermitidos.includes(req.user.role)) {
+    if (!rolesPermitidos.includes(req.user.id_rol)) {
       throw new AuthError("No tienes permiso para realizar esta acción", 403);
     }
 

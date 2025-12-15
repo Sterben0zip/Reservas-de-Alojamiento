@@ -1,0 +1,51 @@
+@baseUrl = http://localhost:3000
+
+### Crear una reseña
+POST {{baseUrl}}/resenas/crear
+Content-Type: application/json
+
+{
+  "id_usuario": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
+  "id_aloja": "5e67543b63ce4853b7912b484760a385",
+  "rating": 5,
+  "comentario": "Excelente lugar, muy recomendable.",
+  "creado_en": "2024-06-15T10:00:00Z",
+  "actualizado_en": "2024-06-15T10:00:00Z"
+}
+
+#--------------------------------------------------#
+
+###conseguir todas las reseñas
+GET {{baseUrl}}/resenas/consulta
+
+#--------------------------------------------------#
+
+###consultar reseña por id
+GET {{baseUrl}}/resenas/consulta
+Content-Type: application/json
+
+{
+  "id": "31666134373331636439343631316630"
+}
+
+#--------------------------------------------------#
+
+### Editar una reseña
+PUT {{baseUrl}}/resenas/editar
+Content-Type: application/json
+
+{
+  "id": "31666134373331636439343631316630",
+  "rating": 4,
+  "comentario": "Muy buen lugar, pero podría mejorar en limpieza.",
+  "actualizado_en": "2024-06-20T12:00:00Z"
+}
+
+#--------------------------------------------------#
+### Eliminar una reseña
+DELETE {{baseUrl}}/resenas/drop
+Content-Type: application/json
+
+{
+  "id": "31666134373331636439343631316630"
+}

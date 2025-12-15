@@ -23,6 +23,7 @@ export class alojaController {
   };
 
   consultar = async (req, res, next) => {
+    const user = req.session;
     try {
       const lista = await alojaService.consultar();
       res.status(200).json({ status: "success", alojamientos: lista });

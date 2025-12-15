@@ -12,6 +12,7 @@ export function authCookieMiddleware(req, res, next) {
         
         const data = jwt.verify(token, process.env.JWT_SECRET)
         req.session = data
+        req.user = data.publicUser
 
     } catch (error) {
         throw new TokenError('Token inválido o expirado', 401, error)

@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:3000
+
+### Crear Reserva
+POST {{baseUrl}}/reservas/crear
+Content-Type: application/json
+
+{
+    "id_usuario": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
+    "id_alojamiento": "5e67543b63ce4853b7912b484760a385",
+    "fecha_inicio": "2024-07-01",
+    "fecha_fin": "2024-07-10",
+    "cantidad_huespedes": 2,
+    "estado": "confirmada",
+    "creado_en": "2024-06-20T10:00:00Z",
+    "actualizado_en": "2024-06-20T10:00:00Z"
+}
+
+#--------------------------------------------------#
+
+### Obtener todas las reservas
+GET {{baseUrl}}/reservas/consulta
+
+#--------------------------------------------------#
+
+### Obtener reserva por ID
+GET {{baseUrl}}/reservas/consulta
+Content-Type: application/json
+
+{
+    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394"
+}
+
+#--------------------------------------------------#
+
+### Actualizar reserva
+PUT {{baseUrl}}/reservas/editar
+Content-Type: application/json
+{
+    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394",
+    "fecha_inicio": "2024-07-05",
+    "fecha_fin": "2024-07-15",
+    "cantidad_huespedes": 3,
+    "estado": "modificada",
+    "actualizado_en": "2024-06-25T12:00:00Z"
+}
+
+#--------------------------------------------------#
+
+### Eliminar reserva
+
+DELETE {{baseUrl}}/reservas/drop
+Content-Type: application/json
+
+{
+    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394"
+}
