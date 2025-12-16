@@ -3,29 +3,37 @@ import { usuariosError } from "./usuarios.error.js"
 
 export class usuariosService {
 
-  static async registrar({ nombre, correo, contrasena, rol }) {
+  static async crear({ nombre, correo, contrasena, rol }) {
     const existe = await usuariosModel.buscarPorCorreo({ correo });
 
     if (existe) {
       throw new usuariosError("El correo ya está registrado", 400);
     }
 
-    const nuevo = await usuariosModel.insertarUsuario({
+    const nuevo = await usuariosModel.crear({
       nombre,
       correo,
-      contrasena,
-      rol
+      password,
+      id_rol
     });
 
     return nuevo;
   }
 
   static async consultar() {
-    return await usuariosModel.buscarTodos();
+    return await usuariosModel.consultar();
   }
 
-  static async consultarPorId({ id }) {
-    const user = await usuariosModel.buscarPorId({ id });
+  static async consultarPorid({ id }) {
+    const user = await usuariosModel.consultarPorid({ id });
+
+    if (!user) throw new usuariosError("Usuario no encontrado", 404);
+
+    return user;
+  }
+
+  static async consultarPorcorreo({ correo }) {
+    const user = await usuariosModel.consultarPorCorreo({ correo });
 
     if (!user) throw new usuariosError("Usuario no encontrado", 404);
 
@@ -37,7 +45,7 @@ export class usuariosService {
 
     if (!ok) throw new usuariosError("No se pudo actualizar el usuario", 400);
 
-    return this.consultarPorId({ id });
+    return this.consultarPorid({ id });
   }
 
   static async eliminar({ id }) {

@@ -49,7 +49,7 @@ export class reservaController {
       if (!result.success)
         return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const reserva = await reservaService.editarFechas(result.data);
+      const reserva = await reservaService.actualizarFechas(result.data);
       res.status(200).json({ status: "success", reserva });
 
     } catch (error) {

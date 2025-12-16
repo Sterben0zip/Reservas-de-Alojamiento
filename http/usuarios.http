@@ -3,16 +3,24 @@
 ### Obtener todos los usuarios
 GET {{baseUrl}}/usuarios/consultar
 
-{}
-
 #--------------------------------------------------#
 
 ### Obtener usuario por id
-GET {{baseUrl}}/usuarios/consultar
+GET {{baseUrl}}/usuarios/consultarPorid
 Content-Type: application/json
 
 {
-    "id":"63691c82-502a-4bf8-8b05-fd6cb30a3cb0"
+    "id":"30ca429d-a41a-464e-8b10-4d83d793a5ce"
+}
+
+#--------------------------------------------------#
+
+### Obtener usuario por correo
+GET {{baseUrl}}/usuarios/consultarPorcorreo
+Content-Type: application/json
+
+{
+    "correo": "omar@example.com"
 }
 
 #--------------------------------------------------#
@@ -22,8 +30,9 @@ PUT {{baseUrl}}/usuarios/editar
 Content-Type: application/json
 
 {
-    "id":"ddd7dbd8-6bdd-44e9-b9fe-a4b8e721b08d",
-    "nombre": "User 123"
+    "id":"30ca429d-a41a-464e-8b10-4d83d793a5ce",
+    "nombre": "Jelouwin",
+    "status": 0
 }
 
 #--------------------------------------------------#
@@ -33,6 +42,6 @@ DELETE  {{baseUrl}}/usuarios/eliminar
 Content-Type: application/json
 
 {
-    "id":"e0abe0af-ed18-4196-847f-7b0630971bb3"
+    "id":"63691c82-502a-4bf8-8b05-fd6cb30a3cb0"
 }
 

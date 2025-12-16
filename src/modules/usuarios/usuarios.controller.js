@@ -28,7 +28,7 @@ export class usuariosController {
     } catch (error) { next(error); }
   };
 
-  consultarPorId = async (req, res, next) => {
+  consultarPorid = async (req, res, next) => {
     try {
       const result = validarIdUsuario(req.params);
       if (!result.success)
@@ -38,6 +38,16 @@ export class usuariosController {
       res.status(200).json({ status: "success", usuario: u });
 
     } catch (error) { next(error); }
+  };
+
+  consultarPorCorreo = async (req, res, next) => {
+  try {
+    const { correo } = req.params;
+    const u = await usuariosService.consultarPorcorreo({ correo });
+    res.status(200).json({ status: "success", usuario: u });
+  } catch (error) {
+    next(error);
+  }
   };
 
   editar = async (req, res, next) => {

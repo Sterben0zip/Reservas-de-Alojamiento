@@ -5,15 +5,12 @@ POST {{baseUrl}}/reservas/crear
 Content-Type: application/json
 
 {
-    "id_usuario": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
-    "id_aloja": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
+    "id_usuario": "0319d745-e654-46f0-ae85-7e0b3b7360da",
+    "id_aloja": "9efaefe7-50c6-469f-80e4-77e5cf6f9713",
     "fecha_inicio": "2024-07-01",
     "fecha_fin": "2024-07-10",
     "precio_total": 600,
-    "cantidad_huespedes": 2,
-    "estado": "confirmada",
-    "creado_en": "2024-06-20T10:00:00Z",
-    "actualizado_en": "2024-06-20T10:00:00Z"
+    "cantidad_huespedes": 1
 }
 
 #--------------------------------------------------#
@@ -28,7 +25,7 @@ GET {{baseUrl}}/reservas/consulta
 Content-Type: application/json
 
 {
-    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394"
+    "id": "f5782bbb-95d3-4e35-bf94-cfff1510820b"
 }
 
 #--------------------------------------------------#
@@ -36,14 +33,16 @@ Content-Type: application/json
 ### Actualizar reserva
 PUT {{baseUrl}}/reservas/editar
 Content-Type: application/json
+
 {
-    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394",
-    "fecha_inicio": "2024-07-05",
-    "fecha_fin": "2024-07-15",
-    "cantidad_huespedes": 3,
-    "estado": "modificada",
-    "actualizado_en": "2024-06-25T12:00:00Z"
+  "id": "f5782bbb-95d3-4e35-bf94-cfff1510820b",
+  "fecha_inicio": "2024-07-05",
+  "fecha_fin": "2024-07-15",
+  "cantidad_huespedes": 3,
+  "estado": 1,
+  "actualizado_en": "2024-06-25T12:00:00Z"
 }
+
 
 #--------------------------------------------------#
 
@@ -53,5 +52,5 @@ DELETE {{baseUrl}}/reservas/drop
 Content-Type: application/json
 
 {
-    "id": "4f5e6d7c8b9a0b1c2d3e4f5061728394"
+    "id": "f5782bbb-95d3-4e35-bf94-cfff1510820b"
 }

@@ -1,4 +1,8 @@
 import { z } from "zod";
+export const validarCorreoUsuario = (data) => z.object({
+  correo: z.string().email()
+}).safeParse(data);
+
 
 export const validarCrearUsuario = (data) => z.object({
   nombre: z.string().min(2),

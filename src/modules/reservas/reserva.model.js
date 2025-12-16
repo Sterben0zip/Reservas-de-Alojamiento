@@ -5,15 +5,15 @@ import crypto from "crypto";
 
 export class reservaModel {
 
-  static async crear({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
+  static async crear({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes}) {
     const conn = await getConnection();
 
     try {
       const id = crypto.randomUUID();
 
       await conn.query(
-        `INSERT INTO reservas (id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes, creado_en, actualizado_en)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO reservas (id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           uuidToBuffer(id),
           uuidToBuffer(id_usuario),
@@ -22,16 +22,16 @@ export class reservaModel {
           fecha_fin,
           precio_total,
           cantidad_huespedes,
-          creado_en,
-          actualizado_en
         ]
       );
 
-      return { id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes, creado_en, actualizado_en };
+      return { id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes, creado_en, actualizado_en};
 
-    } catch (error) {
-      throw new QueryError("Error al crear la reserva", 502, error);
-    }
+   } catch (error) {
+     console.error("ERROR SQL al crear reserva:", error);
+     throw new QueryError("Error al crear la reserva", 502, error);
+}
+
   }
 
   static async consultar() {

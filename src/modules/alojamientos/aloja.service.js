@@ -9,11 +9,11 @@ export class alojaService {
   }
 
   static async consultar() {
-    return await alojaModel.buscarTodos();
+    return await alojaModel.consultar();
   }
 
   static async consultarPorId({ id }) {
-    const res = await alojaModel.buscarPorId({ id });
+    const res = await alojaModel.consultarPorId({ id });
     if (!res) throw new alojaError("Alojamiento no encontrado", 404);
     return res;
   }

@@ -1,37 +1,45 @@
-import { getConnection } from "../../config/database.js"
-import { QueryError } from "../../core/errors/connection.error.js"
-import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js"
-import crypto from "crypto"
+import { getConnection } from "../../config/database.js";
+import { QueryError } from "../../core/errors/connection.error.js";
+import { uuidToBuffer, bufferToUuid } from "../../core/utils/uuid.js";
+import crypto from "crypto";
 
 export class usuariosModel {
 
-  static async insertarUsuario({ nombre, correo, contrasena, rol }) {
+  static async crear({ usuario, correo, password, nombre, id_rol, status = 1 }) {
     const conn = await getConnection();
 
     try {
       const id = crypto.randomUUID();
 
       await conn.query(
-        `INSERT INTO usuarios (id, nombre, correo, contrasena, rol)
-         VALUES (?, ?, ?, ?, ?)`,
-        [uuidToBuffer(id), nombre, correo, contrasena, rol]
+        `INSERT INTO usuarios (id, usuario, correo, password, nombre, status, id_rol)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          uuidToBuffer(id),
+          usuario,
+          correo,
+          password,
+          nombre,
+          status,
+          id_rol
+        ]
       );
 
-      return { id, nombre, correo, rol };
+      return { id, usuario, correo, nombre, status, id_rol };
 
     } catch (error) {
-      throw new QueryError("Error al registrar usuario", 502, error);
+      throw new QueryError("Error al crear usuario", 502, error);
     }
   }
 
-  static async buscarTodos() {
+  static async consultar() {
     const conn = await getConnection();
 
     try {
       const [rows] = await conn.query(`
-        SELECT id, nombre, correo, rol
+        SELECT id, usuario, correo, nombre, status, id_rol
         FROM usuarios
-        ORDER BY creado_en DESC
+        ORDER BY id DESC
       `);
 
       return rows.map(u => ({
@@ -44,15 +52,16 @@ export class usuariosModel {
     }
   }
 
-  static async buscarPorCorreo({ correo }) {
+  static async consultarPorCorreo({ correo }) {
     const conn = await getConnection();
 
     try {
-      const [rows] = await conn.query(`
-        SELECT id, nombre, correo, contrasena, rol
-        FROM usuarios
-        WHERE correo = ?
-      `, [correo]);
+      const [rows] = await conn.query(
+        `SELECT id, usuario, correo, password, nombre, status, id_rol
+         FROM usuarios
+         WHERE correo = ?`,
+        [correo]
+      );
 
       if (rows.length === 0) return null;
 
@@ -67,13 +76,14 @@ export class usuariosModel {
     }
   }
 
-  static async buscarPorId({ id }) {
+  static async consultarPorid({ id }) {
     const conn = await getConnection();
 
     try {
       const [rows] = await conn.query(
-        `SELECT id, nombre, correo, rol
-         FROM usuarios WHERE id = ?`,
+        `SELECT id, usuario, correo, nombre, status, id_rol
+         FROM usuarios
+         WHERE id = ?`,
         [uuidToBuffer(id)]
       );
 
@@ -90,13 +100,15 @@ export class usuariosModel {
     }
   }
 
-  static async actualizar({ status, id, nombre }) {
+  static async actualizar({ id, nombre, status }) {
     const conn = await getConnection();
 
     try {
       const [result] = await conn.query(
-        `UPDATE usuarios SET status = ? nombre = ? WHERE id = ?`,
-        [status, nombre, uuidToBuffer(id)]
+        `UPDATE usuarios
+         SET nombre = ?, status = ?
+         WHERE id = ?`,
+        [nombre, status, uuidToBuffer(id)]
       );
 
       return result.affectedRows > 0;
