@@ -17,7 +17,6 @@ export function bufferToUuid(buffer) {
   ].join("-");
 }
 
-log("Hola mundo");
 // Genera un UUID v4 aleatorio
 export  async function generarUuid() {
   const crypto = await import("crypto");
@@ -29,4 +28,3 @@ export  async function generarUuid() {
 
   return bufferToUuid(buffer);
 }
-log('uuid.js loaded');

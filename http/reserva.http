@@ -6,9 +6,10 @@ Content-Type: application/json
 
 {
     "id_usuario": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
-    "id_alojamiento": "5e67543b63ce4853b7912b484760a385",
+    "id_aloja": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
     "fecha_inicio": "2024-07-01",
     "fecha_fin": "2024-07-10",
+    "precio_total": 600,
     "cantidad_huespedes": 2,
     "estado": "confirmada",
     "creado_en": "2024-06-20T10:00:00Z",

@@ -5,22 +5,22 @@ export const ROLES = {
 };
 
 /*HOST (Anfitrión)
-//Crear alojamientos ✔️
-//Actualizar información de sus alojamientos ✔️
-//Activar / desactivar sus alojamientos ✔️
-//Ver sus reservas ✔️
-Aprobar solicitudes de reserva ➖ (solo si el flujo es manual)
+//Crear alojamientos 
+//Actualizar información de sus alojamientos 
+//Activar / desactivar sus alojamientos 
+//Ver sus reservas 
+Aprobar solicitudes de reserva 
 
 USER (Huésped)
-Buscar alojamientos ✔️
-Filtrar por fechas, ciudad y precio ➖ (pendiente o parcial)
-Realizar reservas ✔️
-Cancelar reservas según reglas ✔️
-Ver historial de reservas ✔️
+Buscar alojamientos 
+Filtrar por fechas, ciudad y precio 
+Realizar reservas 
+Cancelar reservas según reglas 
+Ver historial de reservas 
 
 ADMIN
-Ver todos los alojamientos ✔️
-Eliminar alojamientos inapropiados ✔️
-Bloquear usuarios ➖ (pendiente)
-Ver todas las reservas ✔️
+Ver todos los alojamientos 
+Eliminar alojamientos inapropiados 
+Bloquear usuarios 
+Ver todas las reservas 
 */

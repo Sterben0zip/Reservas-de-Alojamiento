@@ -5,7 +5,7 @@ export class reservaService {
 
   static async crear({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
 
-    const choque = await reservaModel.existeChoqueFechas({
+    const choque = await reservaModel.choquefechas({
       id_aloja,
       inicio: fecha_inicio,
       fin: fecha_fin
@@ -15,7 +15,7 @@ export class reservaService {
       throw new reservaError("El alojamiento ya está ocupado en esas fechas", 400);
     }
 
-    const nueva = await reservaModel.insertarReserva({
+    const nueva = await reservaModel.crear({
       id_usuario,
       id_aloja,
       fecha_inicio,

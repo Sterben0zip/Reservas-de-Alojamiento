@@ -15,7 +15,7 @@ export function authCookieMiddleware(req, res, next) {
         req.user = data.publicUser
 
     } catch (error) {
-        throw new TokenError('Token inválido o expirado', 401, error)
+        throw new TokenError('Token inválido o expirado. ¿Ya intentaste logearte?' , 401, error)
     }
 
     next()

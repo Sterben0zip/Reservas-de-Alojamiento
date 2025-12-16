@@ -9,10 +9,10 @@ export const reseRouter = () => {
   const controller = new reseController();
 
   router.post("/crear", authCookieMiddleware, requireRole([ROLES.USER]), controller.crear);
-  router.get("/consulta", controller.consultar);
-  router.get("/consulta:id", controller.consultarPorId);
+  router.get("/consulta", authCookieMiddleware, controller.consultar);
+  router.get("/consulta:id", authCookieMiddleware, controller.consultarPorId);
   router.put("/editar", authCookieMiddleware, requireRole([ROLES.USER]), controller.editar);
-  router.delete("/drop:id", authCookieMiddleware, requireRole([ROLES.USER, ROLES.ADMIN]), controller.eliminar);
+  router.delete("/drop", authCookieMiddleware, requireRole([ROLES.USER, ROLES.ADMIN]), controller.eliminar);
 
   return router;
 };

@@ -4,7 +4,7 @@ import { reseError } from "./rese.error.js"
 export class reseService {
 
   static async crear({ id_usuario, id_aloja, rating, comentario }) {
-    const nueva = await reseModel.insertar({
+    const nueva = await reseModel.crear({
       id_usuario,
       id_aloja,
       rating,
@@ -15,11 +15,11 @@ export class reseService {
   }
 
   static async consultar() {
-    return await reseModel.obtenerTodas();
+    return await reseModel.consultar();
   }
 
   static async consultarPorId({ id }) {
-    const r = await reseModel.obtenerPorId({ id });
+    const r = await reseModel.consultarPorId({ id });
 
     if (!r) throw new reseError("Reseña no encontrada", 404);
 

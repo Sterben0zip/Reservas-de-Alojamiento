@@ -1,20 +1,16 @@
-import { reseService } from "./rese.service.js"
+import { reseService } from "./rese.service.js";
 import {
   validarCrearRese,
   validarEditarRese,
   validarIdRese,
   errorFlattenError
-} from "./rese.schema.js"
-import {uuidToBuffer} from "../../core/utils/uuid.js";
+} from "./rese.schema.js";
 
 export class reseController {
 
   crear = async (req, res, next) => {
     try {
-      const { id, rol } = req.usuario;
-
-      if (rol !== "CLIENTE")
-        return res.status(403).json({ error: "Solo los clientes pueden crear resenas" });
+      const { id } = req.user; 
 
       const result = validarCrearRese({
         ...req.body,
@@ -25,10 +21,11 @@ export class reseController {
         return res.status(400).json({ error: errorFlattenError(result.error) });
 
       const nueva = await reseService.crear(result.data);
-
       res.status(201).json({ status: "success", reseña: nueva });
 
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   };
 
   consultar = async (req, res, next) => {
@@ -36,7 +33,9 @@ export class reseController {
       const lista = await reseService.consultar();
       res.status(200).json({ status: "success", resenas: lista });
 
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   };
 
   consultarPorId = async (req, res, next) => {
@@ -45,47 +44,42 @@ export class reseController {
       if (!result.success)
         return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const r = await reseService.consultarPorId(result.data);
-      res.status(200).json({ status: "success", reseña: r });
+      const reseña = await reseService.consultarPorId(result.data);
+      res.status(200).json({ status: "success", reseña });
 
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   };
 
   editar = async (req, res, next) => {
     try {
-      const { id: usuarioId, rol } = req.usuario;
-
       const result = validarEditarRese(req.body);
       if (!result.success)
         return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const reseña = await reseService.consultarPorId({ id: result.data.id });
+      const reseña = await reseService.editar(result.data);
+      res.status(200).json({ status: "success", reseña });
 
-      if (rol !== "ADMIN" && reseña.id_usuario !== usuarioId)
-        return res.status(403).json({ error: "No tienes permiso para editar esta reseña" });
-
-      const r = await reseService.editar(result.data);
-      res.status(200).json({ status: "success", reseña: r });
-
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   };
 
+  
   eliminar = async (req, res, next) => {
-    try {
-      const { id: usuarioId, rol } = req.usuario;
+  const data = req.body?.id ? req.body : req.query;
+  try {
+    const result = validarIdRese(data);
+    if (!result.success)
+      return res.status(400).json({ error: errorFlattenError(result.error) });
 
-      const result = validarIdRese(req.body);
-      if (!result.success)
-        return res.status(400).json({ error: errorFlattenError(result.error) });
+    const respuesta = await reseService.eliminar(result.data);
 
-      const reseña = await reseService.consultarPorId(result.data);
+    res.status(200).json({ status: "success", ...respuesta });
 
-      if (rol !== "ADMIN" && reseña.id_usuario !== usuarioId)
-        return res.status(403).json({ error: "No tienes permiso para eliminar esta reseña" });
-
-      const r = await reseService.eliminar(result.data);
-      res.status(200).json({ status: "success", reseña: r });
-
-    } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
   };
 }

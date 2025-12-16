@@ -5,8 +5,8 @@ POST {{baseUrl}}/resenas/crear
 Content-Type: application/json
 
 {
-  "id_usuario": "63691c82-502a-4bf8-8b05-fd6cb30a3cb0",
-  "id_aloja": "5e67543b63ce4853b7912b484760a385",
+  "id_usuario": "0319d745-e654-46f0-ae85-7e0b3b7360da",
+  "id_aloja": "9efaefe7-50c6-469f-80e4-77e5cf6f9713",
   "rating": 5,
   "comentario": "Excelente lugar, muy recomendable.",
   "creado_en": "2024-06-15T10:00:00Z",
@@ -25,7 +25,7 @@ GET {{baseUrl}}/resenas/consulta
 Content-Type: application/json
 
 {
-  "id": "31666134373331636439343631316630"
+  "id": "25bb36ed-62b7-4d54-88f1-24d3c46860f5"
 }
 
 #--------------------------------------------------#
@@ -35,7 +35,7 @@ PUT {{baseUrl}}/resenas/editar
 Content-Type: application/json
 
 {
-  "id": "31666134373331636439343631316630",
+  "id": "25bb36ed-62b7-4d54-88f1-24d3c46860f5",
   "rating": 4,
   "comentario": "Muy buen lugar, pero podría mejorar en limpieza.",
   "actualizado_en": "2024-06-20T12:00:00Z"
@@ -47,5 +47,5 @@ DELETE {{baseUrl}}/resenas/drop
 Content-Type: application/json
 
 {
-  "id": "31666134373331636439343631316630"
+  "id": "7ebf561d-1ce6-40dc-950e-aa7a9433e8c0"
 }

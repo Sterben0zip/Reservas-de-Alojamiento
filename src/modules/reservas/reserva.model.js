@@ -5,14 +5,14 @@ import crypto from "crypto";
 
 export class reservaModel {
 
-  static async insertarReserva({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
+  static async crear({ id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total }) {
     const conn = await getConnection();
 
     try {
       const id = crypto.randomUUID();
 
       await conn.query(
-        `INSERT INTO reservas (id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total)
+        `INSERT INTO reservas (id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes, creado_en, actualizado_en)
          VALUES (?, ?, ?, ?, ?, ?)`,
         [
           uuidToBuffer(id),
@@ -20,18 +20,21 @@ export class reservaModel {
           uuidToBuffer(id_aloja),
           fecha_inicio,
           fecha_fin,
-          precio_total
+          precio_total,
+          cantidad_huespedes,
+          creado_en,
+          actualizado_en
         ]
       );
 
-      return { id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total };
+      return { id, id_usuario, id_aloja, fecha_inicio, fecha_fin, precio_total, cantidad_huespedes, creado_en, actualizado_en };
 
     } catch (error) {
       throw new QueryError("Error al crear la reserva", 502, error);
     }
   }
 
-  static async obtenerTodas() {
+  static async consultar() {
     const conn = await getConnection();
     try {
       const [rows] = await conn.query(`
@@ -53,7 +56,7 @@ export class reservaModel {
     }
   }
 
-  static async obtenerPorId({ id }) {
+  static async consultarPorid({ id }) {
     const conn = await getConnection();
     try {
       const [rows] = await conn.query(
@@ -77,7 +80,7 @@ export class reservaModel {
     }
   }
 
-  static async existeChoqueFechas({ id_aloja, inicio, fin }) {
+  static async choquefechas({ id_aloja, inicio, fin }) {
     const conn = await getConnection();
 
     try {
@@ -103,7 +106,7 @@ export class reservaModel {
     }
   }
 
-  static async actualizarFechas({ id, status, fecha_inicio, fecha_fin }) {
+  static async actualizar({ id, status, fecha_inicio, fecha_fin }) {
     const conn = await getConnection();
 
     try {

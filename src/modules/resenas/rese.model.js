@@ -29,7 +29,7 @@ export class reseModel {
     }
   }
 
-  static async obtenerTodas() {
+  static async consultar() {
     const conn = await getConnection();
     try {
       const [rows] = await conn.query(`
@@ -49,7 +49,7 @@ export class reseModel {
     }
   }
 
-  static async obtenerPorId({ id }) {
+  static async consultarPorId({ id }) {
     const conn = await getConnection();
     try {
       const [rows] = await conn.query(

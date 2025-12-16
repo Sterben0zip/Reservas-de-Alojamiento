@@ -10,6 +10,7 @@ import { reseRouter } from './modules/resenas/rese.routes.js'
 import { reservaRouter } from './modules/reservas/reserva.routes.js'
 
 const app = express()
+app.use(express.json());
 app.use(json())
 app.use(cookieParser())
 app.use(corsMiddleware())
